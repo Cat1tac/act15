@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'act15-3a75a',
     storageBucket: 'act15-3a75a.firebasestorage.app',
   );
+
 }

@@ -42,6 +42,33 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     super.dispose();
   }
 
+  String? _validateName(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Name is required';
+    if (value.trim().length < 2) return 'Name must be at least 2 characters';
+    return null;
+  }
+
+  String? _validateDescription(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Description is required';
+    return null;
+  }
+
+  String? _validateQuantity(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Quantity is required';
+    final qty = int.tryParse(value.trim());
+    if (qty == null) return 'Enter a valid whole number';
+    if (qty < 0) return 'Quantity cannot be negative';
+    return null;
+  }
+
+  String? _validatePrice(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Price is required';
+    final price = double.tryParse(value.trim());
+    if (price == null) return 'Enter a valid number';
+    if (price < 0) return 'Price cannot be negative';
+    return null;
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -59,7 +86,15 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       await _service.addItem(item);
     }
 
-    if (mounted) Navigator.pop(context);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isEditing ? 'Item updated!' : 'Item added!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -80,6 +115,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   labelText: 'Name',
                   border: OutlineInputBorder(),
                 ),
+                validator: _validateName,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -89,6 +125,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
+                validator: _validateDescription,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -98,6 +135,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                validator: _validateQuantity,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -109,6 +147,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 ),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
+                validator: _validatePrice,
               ),
               const SizedBox(height: 24),
               SizedBox(
